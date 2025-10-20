@@ -87,12 +87,12 @@ namespace ToDoApp2.ViewModels
             {
                 if (OperatingTask.Id == 0)
                 {
-                    await _context.AddItemAsync<TaskModel>(OperatingTask);
+                    await _context.AddTaskAsync<TaskModel>(OperatingTask);
                     Tasks.Add(OperatingTask);
                 }
                 else
                 {
-                    if (await _context.UpdateItemAsync<TaskModel>(OperatingTask))
+                    if (await _context.UpdateTaskAsync<TaskModel>(OperatingTask))
                     {
                         var taskCopy = OperatingTask.Clone();
                         var index = Tasks.IndexOf(OperatingTask);
