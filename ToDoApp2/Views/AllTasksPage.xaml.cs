@@ -24,4 +24,12 @@ public partial class AllTasksPage : ContentPage
         // Load tasks when page becomes visible
         await _viewModel.LoadTasksAsync();
     }
+    private async void OnCompletedTasksClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new ());
+    }
+    private async void UncompletedTasksClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new());
+    }
 }
