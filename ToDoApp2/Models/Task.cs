@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace ToDoApp2.Models
 {
     public class Task
     {
+        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
         public string Title { get; set; }
@@ -16,7 +18,13 @@ namespace ToDoApp2.Models
 
         public bool IsCompleted { get; set; } = false;
 
-        public Task Clone() => MemberwiseClone() as Task;
+        public Task Clone() => new Task
+        {
+            Id = this.Id,
+            Title = this.Title,
+            DueDate = this.DueDate,
+            IsCompleted = this.IsCompleted
+        };
 
         public (bool IsValid, string? ErrorMessage) Validate()
         {

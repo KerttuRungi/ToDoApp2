@@ -25,7 +25,7 @@ namespace ToDoApp2.ViewModels
         private TaskModel _operatingTask = new();
 
         // Property for button text
-        public string TaskButtonText => OperatingTask?.Id == 0 ? "Create Task" : "Update Task";
+        public string TaskButtonText => OperatingTask != null && OperatingTask.Id > 0 ? "Update Task" : "Create Task";
 
         // OperatingTask changes
         partial void OnOperatingTaskChanged(TaskModel value)
@@ -78,8 +78,11 @@ namespace ToDoApp2.ViewModels
         [RelayCommand]
         private void SetOperatingTask(TaskModel? task)
         {
-            OperatingTask = task ?? new TaskModel();
-            // notify button text update
+            if (task is null)
+                OperatingTask = new TaskModel();
+            else
+                OperatingTask = task.Clone(); // preserves Id
+
             OnPropertyChanged(nameof(TaskButtonText));
         }
 
@@ -92,7 +95,8 @@ namespace ToDoApp2.ViewModels
             var (isValid, errorMessage) = OperatingTask.Validate();
             if (!isValid)
             {
-                await Shell.Current.DisplayAlert("Validation Error", errorMessage, "OK");
+                // Use Application.Current.MainPage instead of Shell.Current
+                await Application.Current.MainPage.DisplayAlert("Validation Error", errorMessage, "OK");
                 return;
             }
 
@@ -108,24 +112,22 @@ namespace ToDoApp2.ViewModels
                 {
                     if (await _context.UpdateTaskAsync<TaskModel>(OperatingTask))
                     {
-                        // find the existing task in Tasks by Id and replace it
-                        var existingTask = Tasks.FirstOrDefault(t => t.Id == OperatingTask.Id);
-                        if (existingTask != null)
-                        {
-                            var index = Tasks.IndexOf(existingTask);
+                        var index = Tasks.ToList().FindIndex(t => t.Id == OperatingTask.Id);
+                        if (index >= 0)
                             Tasks[index] = OperatingTask;
-                        }
                     }
                     else
                     {
-                        await Shell.Current.DisplayAlert("Error", "Task updating error", "OK");
+                        await Application.Current.MainPage.DisplayAlert("Error", "Task updating error", "OK");
                         return;
                     }
                 }
 
-                SetOperatingTaskCommand.Execute(new());
+                // Reset the form after save
+                SetOperatingTaskCommand.Execute(null);
             }, busyText);
         }
+
 
         [RelayCommand]
         private async Task DeleteTaskAsync(int id)
