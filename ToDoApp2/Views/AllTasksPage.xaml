@@ -5,11 +5,11 @@
              xmlns:vm="clr-namespace:ToDoApp2.ViewModels"
              xmlns:models="clr-namespace:ToDoApp2.Models"
              x:DataType="vm:TaskViewModel"
-             Title="To-Do Tasks">
+             Title="To-Do Tasks"
+             BackgroundColor="#FFECC0">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *" Padding="10">
 
-        <!-- Busy overlay -->
         <VerticalStackLayout Grid.RowSpan="2"
                              VerticalOptions="Center"
                              HorizontalOptions="Center"
@@ -18,76 +18,77 @@
                                VerticalOptions="Center"
                                HorizontalOptions="Center" />
             <Label Text="{Binding BusyText}"
-                   TextColor="{AppThemeBinding Light='Black', Dark='White'}"
+                   TextColor="Black"
                    VerticalOptions="Center"
                    HorizontalOptions="Center"/>
         </VerticalStackLayout>
 
-        <!-- Title -->
         <Label Grid.Row="0"
                Text="Your Tasks"
                FontAttributes="Bold"
                FontSize="22"
                Padding="10,20,10,5"
                HorizontalOptions="Center"
-               TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+               TextColor="Black" />
 
-        <!-- Main content area -->
-        <Grid Grid.Row="1"
-              RowDefinitions="Auto, *"
-              Padding="10,0,10,10">
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
 
-            <!-- Task creation form (top) -->
             <Frame Grid.Row="0"
                    CornerRadius="10"
                    Padding="10"
                    HasShadow="True"
-                   BackgroundColor="{AppThemeBinding Light='#F5FFF5', Dark='#2B2B2B'}"
-                   BorderColor="{AppThemeBinding Light='#C8E6C9', Dark='#3A3A3A'}">
+                   BackgroundColor="#FFECC0"
+                   BorderColor="#D1B070">
 
                 <Grid RowDefinitions="Auto, Auto"
                       ColumnDefinitions="*, Auto"
                       RowSpacing="10"
                       ColumnSpacing="10">
 
-                    <!-- Title input -->
-                    <VerticalStackLayout Grid.Row="0"
-                                         Grid.Column="0">
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="0">
                         <Label Text="Title"
                                FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
-                        <Entry Text="{Binding OperatingTask.Title}"
-                               Placeholder="Enter task title"
-                               TextColor="{AppThemeBinding Light='Black', Dark='White'}"
-                               PlaceholderColor="{AppThemeBinding Light='Gray', Dark='#AAAAAA'}"
-                               BackgroundColor="{AppThemeBinding Light='White', Dark='#3A3A3A'}"/>
+                               TextColor="Black" />
+                        <Frame BackgroundColor="White"
+                               BorderColor="#D1B070"
+                               CornerRadius="10"
+                               Padding="0"
+                               HasShadow="False">
+                            <Entry Text="{Binding OperatingTask.Title}"
+                                   Placeholder="Enter task title"
+                                   TextColor="Black"
+                                   PlaceholderColor="Gray"
+                                   BackgroundColor="Transparent"/>
+                        </Frame>
                     </VerticalStackLayout>
 
-                    <!-- Due date -->
-                    <VerticalStackLayout Grid.Row="0"
-                                         Grid.Column="1">
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="1">
                         <Label Text="Due Date"
                                FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
-                        <DatePicker Date="{Binding OperatingTask.DueDate}"
-                                    TextColor="{AppThemeBinding Light='Black', Dark='White'}"
-                                    BackgroundColor="{AppThemeBinding Light='White', Dark='#3A3A3A'}"
-                                    Format="dd/MM/yyyy" />
+                               TextColor="Black" />
+                        <Frame BackgroundColor="White"
+                               BorderColor="#D1B070"
+                               CornerRadius="10"
+                               Padding="0"
+                               HasShadow="False">
+                            <DatePicker Date="{Binding OperatingTask.DueDate}"
+                                        TextColor="Black"
+                                        BackgroundColor="Transparent"
+                                        Format="dd/MM/yyyy" />
+                        </Frame>
                     </VerticalStackLayout>
 
-                    <!-- Create / Update button -->
                     <Button Grid.Row="1"
                             Grid.ColumnSpan="2"
                             Text="{Binding TaskButtonText}"
-                            BackgroundColor="{AppThemeBinding Light='#4CAF50', Dark='#66BB6A'}"
-                            TextColor="White"
-                            CornerRadius="6"
+                            BackgroundColor="#a1e17f"
+                            TextColor="Black"
+                            CornerRadius="25"
                             Padding="40,6"
                             Command="{Binding SaveTaskCommand}" />
                 </Grid>
             </Frame>
 
-            <!-- Task list below -->
             <CollectionView Grid.Row="1"
                             Margin="0,10,0,0"
                             ItemsSource="{Binding Tasks}">
@@ -99,51 +100,46 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Task">
                         <Frame Margin="0,0,0,5"
-                               CornerRadius="8"
+                               CornerRadius="10"
                                Padding="10"
                                HasShadow="True"
-                               BackgroundColor="{AppThemeBinding Light='#E8F5E9', Dark='#333333'}"
-                               BorderColor="{AppThemeBinding Light='#AED581', Dark='#444444'}">
-                            <Grid RowDefinitions="Auto, Auto"
-                                  ColumnDefinitions="*, Auto"
-                                  RowSpacing="4">
+                               BackgroundColor="#FFECC0"
+                               BorderColor="#D1B070">
 
-                                <!-- Task title -->
-                                <Label Grid.Row="0"
-                                       Grid.Column="0"
-                                       Text="{Binding Title}"
-                                       FontAttributes="Bold"
-                                       FontSize="16"
-                                       TextColor="{AppThemeBinding Light='Black', Dark='White'}" />
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                <CheckBox IsChecked="{Binding IsCompleted}"
+                                          VerticalOptions="Center"
+                                          Color="#4CAF50" />
 
-                                <!-- Due date -->
-                                <Label Grid.Row="1"
-                                       Grid.Column="0"
-                                       Text="{Binding DueDate, StringFormat='Due: {0:dd MMM yyyy}'}"
-                                       FontSize="12"
-                                       FontAttributes="Italic"
-                                       TextColor="{AppThemeBinding Light='Gray', Dark='#CCCCCC'}" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="{Binding Title}"
+                                           FontAttributes="Bold"
+                                           FontSize="16"
+                                           TextColor="Black" />
+                                    <Label Text="{Binding DueDate, StringFormat='Due: {0:dd MMM yyyy}'}"
+                                           FontSize="12"
+                                           FontAttributes="Italic"
+                                           TextColor="Black" />
+                                </VerticalStackLayout>
 
-                                <!-- Edit -->
-                                <Button Grid.Row="0"
-                                        Grid.Column="1"
-                                        Text="Edit"
-                                        FontSize="12"
-                                        Padding="5,0"
-                                        CornerRadius="4"
-                                        BackgroundColor="{AppThemeBinding Light='#64B5F6', Dark='#1E88E5'}"
-                                        TextColor="White"
+                                <Button Grid.Column="2"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Text=""
+                                        FontSize="18"
+                                        Padding="10,0"
+                                        BackgroundColor="#a1e17f"
+                                        CornerRadius="25"
+                                        TextColor="Black"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TaskViewModel}}, Path=SetOperatingTaskCommand}"
                                         CommandParameter="{Binding .}" />
 
-                                <!-- Delete -->
-                                <Button Grid.Row="1"
-                                        Grid.Column="1"
-                                        Text="Del"
-                                        FontSize="12"
-                                        Padding="5,0"
-                                        CornerRadius="4"
-                                        BackgroundColor="{AppThemeBinding Light='#E57373', Dark='#C62828'}"
+                                <Button Grid.Column="3"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Text=""
+                                        FontSize="18"
+                                        Padding="10,0"
+                                        BackgroundColor="#e57373"
+                                        CornerRadius="25"
                                         TextColor="White"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TaskViewModel}}, Path=DeleteTaskCommand}"
                                         CommandParameter="{Binding Id}" />
@@ -152,7 +148,6 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
 
-                <!-- Empty view -->
                 <CollectionView.EmptyView>
                     <VerticalStackLayout HorizontalOptions="Center"
                                          VerticalOptions="Center"
@@ -161,9 +156,9 @@
                                FontSize="18"
                                FontAttributes="Bold"
                                HorizontalTextAlignment="Center"
-                               TextColor="{AppThemeBinding Light='Black', Dark='White'}"/>
+                               TextColor="Black"/>
                         <Label Text="Tap 'Create Task' above to add one."
-                               TextColor="{AppThemeBinding Light='Gray', Dark='#BBBBBB'}"
+                               TextColor="Gray"
                                HorizontalTextAlignment="Center"/>
                     </VerticalStackLayout>
                 </CollectionView.EmptyView>

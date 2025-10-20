@@ -76,7 +76,12 @@ namespace ToDoApp2.ViewModels
         }
 
         [RelayCommand]
-        private void SetOperatingTask(TaskModel? task) => OperatingTask = task ?? new TaskModel();
+        private void SetOperatingTask(TaskModel? task)
+        {
+            OperatingTask = task ?? new TaskModel();
+            // notify button text update
+            OnPropertyChanged(nameof(TaskButtonText));
+        }
 
         [RelayCommand]
         private async Task SaveTaskAsync()
@@ -103,11 +108,13 @@ namespace ToDoApp2.ViewModels
                 {
                     if (await _context.UpdateTaskAsync<TaskModel>(OperatingTask))
                     {
-                        var taskCopy = OperatingTask.Clone();
-                        var index = Tasks.IndexOf(OperatingTask);
-
-                        Tasks.RemoveAt(index);
-                        Tasks.Insert(index, taskCopy);
+                        // find the existing task in Tasks by Id and replace it
+                        var existingTask = Tasks.FirstOrDefault(t => t.Id == OperatingTask.Id);
+                        if (existingTask != null)
+                        {
+                            var index = Tasks.IndexOf(existingTask);
+                            Tasks[index] = OperatingTask;
+                        }
                     }
                     else
                     {
