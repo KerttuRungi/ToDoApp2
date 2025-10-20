@@ -24,7 +24,7 @@ public partial class AllTasksPage : ContentPage
         // Load tasks when page becomes visible
         await _viewModel.LoadTasksAsync();
     }
-    private async void OnCompletedTasksClicked(object sender, EventArgs e)
+    private async void CompletedTasksClicked(object sender, EventArgs e)
     {
         await Navigation.PushAsync(new ());
     }
@@ -32,4 +32,13 @@ public partial class AllTasksPage : ContentPage
     {
         await Navigation.PushAsync(new());
     }
+    private async void CheckBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    {
+        if (sender is CheckBox cb && cb.BindingContext is ToDoApp2.Models.Task task)
+        {
+            task.IsCompleted = e.Value; // true = 1, false = 0 in DB
+            await _viewModel.UpdateTaskCompletionAsync(task);
+        }
+    }
+
 }

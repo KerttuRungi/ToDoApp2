@@ -146,5 +146,19 @@ namespace ToDoApp2.ViewModels
                 }
             }, "Deleting task...");
         }
+
+        public async Task UpdateTaskCompletionAsync(TaskModel task)
+        {
+            await ExecuteAsync(async () =>
+            {
+                if (await _context.UpdateTaskAsync<TaskModel>(task))
+                {
+                    var index = Tasks.ToList().FindIndex(t => t.Id == task.Id);
+                    if (index >= 0)
+                        Tasks[index] = task;
+                }
+            }, "Updating task...");
+        }
+
     }
 }
