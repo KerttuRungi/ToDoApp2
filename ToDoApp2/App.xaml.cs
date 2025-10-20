@@ -4,6 +4,8 @@ using Microsoft.UI.Windowing;
 using Windows.Graphics;
 #endif
 
+using ToDoApp2.Views;
+
 namespace ToDoApp2
 {
     public partial class App : Application
@@ -27,7 +29,7 @@ namespace ToDoApp2
 #endif
             });
 
-            MainPage = new AppShell();
+            MainPage = new AllTasksPage();
 
         }
     }

@@ -24,12 +24,21 @@ namespace ToDoApp2.ViewModels
         [ObservableProperty]
         private TaskModel _operatingTask = new();
 
+        // Property for button text
+        public string TaskButtonText => OperatingTask?.Id == 0 ? "Create Task" : "Update Task";
+
+        // OperatingTask changes
+        partial void OnOperatingTaskChanged(TaskModel value)
+        {
+            OnPropertyChanged(nameof(TaskButtonText));
+        }
+
         [ObservableProperty]
         private bool _isBusy;
 
         [ObservableProperty]
         private string _busyText;
-
+       
         public async Task LoadTasksAsync()
         {
             await ExecuteAsync(async () =>
