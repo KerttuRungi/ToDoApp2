@@ -24,12 +24,21 @@ namespace ToDoApp2.ViewModels
         [ObservableProperty]
         private TaskModel _operatingTask = new();
 
+        // Property for button text
+        public string TaskButtonText => OperatingTask != null && OperatingTask.Id > 0 ? "Update Task" : "Create Task";
+
+        // OperatingTask changes
+        partial void OnOperatingTaskChanged(TaskModel value)
+        {
+            OnPropertyChanged(nameof(TaskButtonText));
+        }
+
         [ObservableProperty]
         private bool _isBusy;
 
         [ObservableProperty]
         private string _busyText;
-
+       
         public async Task LoadTasksAsync()
         {
             await ExecuteAsync(async () =>
@@ -67,7 +76,15 @@ namespace ToDoApp2.ViewModels
         }
 
         [RelayCommand]
-        private void SetOperatingTask(TaskModel? task) => OperatingTask = task ?? new TaskModel();
+        private void SetOperatingTask(TaskModel? task)
+        {
+            if (task is null)
+                OperatingTask = new TaskModel();
+            else
+                OperatingTask = task.Clone(); // preserves Id
+
+            OnPropertyChanged(nameof(TaskButtonText));
+        }
 
         [RelayCommand]
         private async Task SaveTaskAsync()
@@ -78,7 +95,8 @@ namespace ToDoApp2.ViewModels
             var (isValid, errorMessage) = OperatingTask.Validate();
             if (!isValid)
             {
-                await Shell.Current.DisplayAlert("Validation Error", errorMessage, "OK");
+                // Use Application.Current.MainPage instead of Shell.Current
+                await Application.Current.MainPage.DisplayAlert("Validation Error", errorMessage, "OK");
                 return;
             }
 
@@ -94,22 +112,22 @@ namespace ToDoApp2.ViewModels
                 {
                     if (await _context.UpdateTaskAsync<TaskModel>(OperatingTask))
                     {
-                        var taskCopy = OperatingTask.Clone();
-                        var index = Tasks.IndexOf(OperatingTask);
-
-                        Tasks.RemoveAt(index);
-                        Tasks.Insert(index, taskCopy);
+                        var index = Tasks.ToList().FindIndex(t => t.Id == OperatingTask.Id);
+                        if (index >= 0)
+                            Tasks[index] = OperatingTask;
                     }
                     else
                     {
-                        await Shell.Current.DisplayAlert("Error", "Task updating error", "OK");
+                        await Application.Current.MainPage.DisplayAlert("Error", "Task updating error", "OK");
                         return;
                     }
                 }
 
-                SetOperatingTaskCommand.Execute(new());
+                // Reset the form after save
+                SetOperatingTaskCommand.Execute(null);
             }, busyText);
         }
+
 
         [RelayCommand]
         private async Task DeleteTaskAsync(int id)
@@ -128,5 +146,19 @@ namespace ToDoApp2.ViewModels
                 }
             }, "Deleting task...");
         }
+
+        public async Task UpdateTaskCompletionAsync(TaskModel task)
+        {
+            await ExecuteAsync(async () =>
+            {
+                if (await _context.UpdateTaskAsync<TaskModel>(task))
+                {
+                    var index = Tasks.ToList().FindIndex(t => t.Id == task.Id);
+                    if (index >= 0)
+                        Tasks[index] = task;
+                }
+            }, "Updating task...");
+        }
+
     }
 }

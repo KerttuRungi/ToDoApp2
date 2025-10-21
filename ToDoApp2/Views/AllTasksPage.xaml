@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ToDoApp2.Views.AllTasksPage"
+             xmlns:vm="clr-namespace:ToDoApp2.ViewModels"
+             xmlns:models="clr-namespace:ToDoApp2.Models"
+             x:DataType="vm:TaskViewModel"
+             Title="To-Do Tasks"
+             BackgroundColor="#FFECC0">
+
+    <!-- Buttons, Title, Content -->
+    <Grid RowDefinitions="Auto,Auto,*" Padding="10">
+
+        <!-- Busy Indicator -->
+        <VerticalStackLayout Grid.RowSpan="3"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             IsVisible="{Binding IsBusy}">
+            <ActivityIndicator IsRunning="True"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center" />
+            <Label Text="{Binding BusyText}"
+                   TextColor="Black"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <!-- Two Buttons at Top -->
+        <HorizontalStackLayout Grid.Row="0"
+                               HorizontalOptions="Center"
+                               Spacing="20"
+                               Margin="0,10,0,5">
+
+            <Button Text="✓ Tasks"
+                    BackgroundColor="#FFB997"
+                    TextColor="Black"
+                    CornerRadius="25"
+                    FontSize="16"
+                    WidthRequest="160"
+                    Padding="15,8"
+                    Clicked="CompletedTasksClicked"/>
+
+            <Button Text="X Tasks"
+                    BackgroundColor="#A1E17F"
+                    TextColor="Black"
+                    CornerRadius="25"
+                    FontSize="16"
+                    WidthRequest="160"
+                    Padding="15,8"
+                    Clicked="UncompletedTasksClicked"/>
+        </HorizontalStackLayout>
+
+        <!-- Page Title (now below buttons) -->
+        <Label Grid.Row="1"
+               Text="Your Tasks"
+               FontAttributes="Bold"
+               FontSize="22"
+               Padding="10,10,10,5"
+               HorizontalOptions="Center"
+               TextColor="Black" />
+
+        <!-- Main Content -->
+        <Grid Grid.Row="2" RowDefinitions="Auto,*">
+
+            <Frame Grid.Row="0"
+                   CornerRadius="10"
+                   Padding="10"
+                   HasShadow="True"
+                   BackgroundColor="#FFECC0"
+                   BorderColor="#D1B070"
+                   Margin="0,0,0,10">
+
+                <Grid RowDefinitions="Auto, Auto"
+                      ColumnDefinitions="*, Auto"
+                      RowSpacing="10"
+                      ColumnSpacing="10">
+
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                        <Label Text="Title"
+                               FontAttributes="Bold"
+                               TextColor="Black" />
+                        <Frame BackgroundColor="White"
+                               BorderColor="#D1B070"
+                               CornerRadius="10"
+                               Padding="0"
+                               HasShadow="False">
+                            <Entry Text="{Binding OperatingTask.Title}"
+                                   Placeholder="Enter task title"
+                                   TextColor="Black"
+                                   PlaceholderColor="Gray"
+                                   BackgroundColor="Transparent"/>
+                        </Frame>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                        <Label Text="Due Date"
+                               FontAttributes="Bold"
+                               TextColor="Black" />
+                        <Frame BackgroundColor="White"
+                               BorderColor="#D1B070"
+                               CornerRadius="10"
+                               Padding="0"
+                               HasShadow="False">
+                            <DatePicker Date="{Binding OperatingTask.DueDate}"
+                                        TextColor="Black"
+                                        BackgroundColor="Transparent"
+                                        Format="dd/MM/yyyy" />
+                        </Frame>
+                    </VerticalStackLayout>
+
+                    <Button Grid.Row="1"
+                            Grid.ColumnSpan="2"
+                            Text="{Binding TaskButtonText}"
+                            BackgroundColor="#a1e17f"
+                            TextColor="Black"
+                            CornerRadius="25"
+                            Padding="40,6"
+                            Command="{Binding SaveTaskCommand}" />
+                </Grid>
+            </Frame>
+
+            <CollectionView Grid.Row="1"
+                            Margin="0,10,0,0"
+                            ItemsSource="{Binding Tasks}">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical"
+                                       ItemSpacing="10" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Task">
+                        <Frame Margin="0,0,0,5"
+                               CornerRadius="10"
+                               Padding="10"
+                               HasShadow="True"
+                               BackgroundColor="#FFECC0"
+                               BorderColor="#D1B070">
+
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                <CheckBox IsChecked="{Binding IsCompleted}"
+                                          VerticalOptions="Center"
+                                          Color="#4CAF50" CheckedChanged="CheckBox_CheckedChanged"/>
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="{Binding Title}"
+                                           FontAttributes="Bold"
+                                           FontSize="16"
+                                           TextColor="Black" />
+                                    <Label Text="{Binding DueDate, StringFormat='Due: {0:dd MMM yyyy}'}"
+                                           FontSize="12"
+                                           FontAttributes="Italic"
+                                           TextColor="Black" />
+                                </VerticalStackLayout>
+
+                                <Button Grid.Column="2"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Text=""
+                                        FontSize="18"
+                                        Padding="10,0"
+                                        BackgroundColor="#a1e17f"
+                                        CornerRadius="25"
+                                        TextColor="Black"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TaskViewModel}}, Path=SetOperatingTaskCommand}"
+                                        CommandParameter="{Binding .}" />
+
+                                <Button Grid.Column="3"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Text=""
+                                        FontSize="18"
+                                        Padding="10,0"
+                                        BackgroundColor="#e57373"
+                                        CornerRadius="25"
+                                        TextColor="White"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TaskViewModel}}, Path=DeleteTaskCommand}"
+                                        CommandParameter="{Binding Id}" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center"
+                                         VerticalOptions="Center"
+                                         Padding="20">
+                        <Label Text="No Tasks Found"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalTextAlignment="Center"
+                               TextColor="Black"/>
+                        <Label Text="Tap 'Create Task' above to add one."
+                               TextColor="Gray"
+                               HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </Grid>
+    </Grid>
+</ContentPage>
