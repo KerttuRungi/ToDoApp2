@@ -7,9 +7,7 @@ public partial class StartPage : ContentPage
         InitializeComponent();
     }
 
-    private async void OnGetStartedClicked(object sender, EventArgs e)
-    {
-        //New page to navigate to goes in the brackets
-        await Navigation.PushAsync(new ());
-    }
+    
+    async void OnGetStartedClicked(System.Object sender, System.EventArgs e)
+       => Application.Current.MainPage = new NavigationPage(new AllTasksPage());
 }
