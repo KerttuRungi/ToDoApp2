@@ -9,6 +9,7 @@ public partial class StartPage : ContentPage
 
     private async void OnGetStartedClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new TasksPage());
+        //New page to navigate to goes in the brackets
+        await Navigation.PushAsync(new ());
     }
 }
