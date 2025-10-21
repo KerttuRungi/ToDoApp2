@@ -29,7 +29,7 @@ namespace ToDoApp2
 #endif
             });
 
-            MainPage = new StartPage();
+            MainPage = new AllTasksPage();
 
         }
     }
