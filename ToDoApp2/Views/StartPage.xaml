@@ -2,11 +2,42 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ToDoApp2.Views.StartPage"
-             Title="StartPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="StartPage"
+             BackgroundColor="#FFECC0">
+
+    <Grid>
+        <Image Source="startbackground.png"
+                   Aspect="AspectFill"
+                   Opacity="0.5" />
+        
+        <VerticalStackLayout 
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            Spacing="20">
+
+            <Image
+                Source="checkboximage.png"
+                WidthRequest="200"
+                HeightRequest="200">
+                
+                
+            </Image>
+                
+            <Label 
+                Text="Welcome to To-do App"
+                FontSize="28"
+                FontAttributes="Bold"
+                HorizontalTextAlignment="Center"
+                TextColor="Black"/>
+
+            <Button 
+                Text="To Tasks"
+                FontSize="18"
+                Padding="15,10"
+                BackgroundColor="#FFB997"
+                TextColor="Black"
+                CornerRadius="25"
+                Clicked="OnGetStartedClicked"/>
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>
