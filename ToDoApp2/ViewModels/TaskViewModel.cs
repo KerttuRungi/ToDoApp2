@@ -24,10 +24,8 @@ namespace ToDoApp2.ViewModels
         [ObservableProperty]
         private TaskModel _operatingTask = new();
 
-        // Property for button text
         public string TaskButtonText => OperatingTask != null && OperatingTask.Id > 0 ? "Update Task" : "Create Task";
 
-        // OperatingTask changes
         partial void OnOperatingTaskChanged(TaskModel value)
         {
             OnPropertyChanged(nameof(TaskButtonText));
@@ -36,53 +34,38 @@ namespace ToDoApp2.ViewModels
         [ObservableProperty]
         private bool _isBusy;
 
-        [ObservableProperty]
-        private string _busyText;
-       
         public async Task LoadTasksAsync()
         {
             await ExecuteAsync(async () =>
             {
                 var tasks = await _context.GetAllAsync<TaskModel>();
-                if (tasks is not null && tasks.Any())
-                {
-                    Tasks ??= new ObservableCollection<TaskModel>();
-                    foreach (var task in tasks)
-                    {
-                        Tasks.Add(task);
-                    }
-                }
-            }, "Fetching tasks...");
+                Tasks = new ObservableCollection<TaskModel>(tasks ?? new List<TaskModel>());
+            });
         }
 
-        private async Task ExecuteAsync(Func<Task> operating, string? busyText = null)
+        private async Task ExecuteAsync(Func<Task> action)
         {
+            if (IsBusy) return;
             IsBusy = true;
-            BusyText = busyText ?? "Processing...";
+
             try
             {
-                if (operating != null)
-                    await operating.Invoke();
+                await action.Invoke();
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
             }
             finally
             {
                 IsBusy = false;
-                BusyText = "Processing...";
             }
         }
 
         [RelayCommand]
         private void SetOperatingTask(TaskModel? task)
         {
-            if (task is null)
-                OperatingTask = new TaskModel();
-            else
-                OperatingTask = task.Clone(); // preserves Id
-
+            OperatingTask = task?.Clone() ?? new TaskModel();
             OnPropertyChanged(nameof(TaskButtonText));
         }
 
@@ -95,12 +78,10 @@ namespace ToDoApp2.ViewModels
             var (isValid, errorMessage) = OperatingTask.Validate();
             if (!isValid)
             {
-                // Use Application.Current.MainPage instead of Shell.Current
                 await Application.Current.MainPage.DisplayAlert("Validation Error", errorMessage, "OK");
                 return;
             }
 
-            var busyText = OperatingTask.Id == 0 ? "Creating task..." : "Updating task...";
             await ExecuteAsync(async () =>
             {
                 if (OperatingTask.Id == 0)
@@ -118,16 +99,14 @@ namespace ToDoApp2.ViewModels
                     }
                     else
                     {
-                        await Application.Current.MainPage.DisplayAlert("Error", "Task updating error", "OK");
+                        await Application.Current.MainPage.DisplayAlert("Error", "Task update failed", "OK");
                         return;
                     }
                 }
 
-                // Reset the form after save
-                SetOperatingTaskCommand.Execute(null);
-            }, busyText);
+                SetOperatingTask(null);
+            });
         }
-
 
         [RelayCommand]
         private async Task DeleteTaskAsync(int id)
@@ -142,23 +121,34 @@ namespace ToDoApp2.ViewModels
                 }
                 else
                 {
-                    await Shell.Current.DisplayAlert("Delete Error", "Task was not deleted", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Error", "Task was not deleted", "OK");
                 }
-            }, "Deleting task...");
+            });
         }
 
         public async Task UpdateTaskCompletionAsync(TaskModel task)
         {
-            await ExecuteAsync(async () =>
-            {
-                if (await _context.UpdateTaskAsync<TaskModel>(task))
-                {
-                    var index = Tasks.ToList().FindIndex(t => t.Id == task.Id);
-                    if (index >= 0)
-                        Tasks[index] = task;
-                }
-            }, "Updating task...");
-        }
+            // Update UI immediately
+            var index = Tasks.ToList().FindIndex(t => t.Id == task.Id);
+            if (index >= 0)
+                Tasks[index].IsCompleted = task.IsCompleted;
 
+            // Save in background (non-blocking)
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _context.UpdateTaskAsync<TaskModel>(task);
+                }
+                catch (Exception ex)
+                {
+                    // Only show alert on main thread
+                    MainThread.BeginInvokeOnMainThread(async () =>
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+                    });
+                }
+            });
+        }
     }
 }

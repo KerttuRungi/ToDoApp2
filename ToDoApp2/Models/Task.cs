@@ -1,9 +1,10 @@
 ﻿using SQLite;
 using System;
+using System.ComponentModel;
 
 namespace ToDoApp2.Models
 {
-    public class Task
+    public class Task : INotifyPropertyChanged
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -12,7 +13,19 @@ namespace ToDoApp2.Models
 
         public DateTime? DueDate { get; set; }
 
-        public bool IsCompleted { get; set; } = false;
+        private bool _isCompleted;
+        public bool IsCompleted
+        {
+            get => _isCompleted;
+            set
+            {
+                if (_isCompleted != value)
+                {
+                    _isCompleted = value;
+                    OnPropertyChanged(nameof(IsCompleted));
+                }
+            }
+        }
 
         public Task Clone() => new Task
         {
@@ -31,5 +44,8 @@ namespace ToDoApp2.Models
 
             return (true, null);
         }
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

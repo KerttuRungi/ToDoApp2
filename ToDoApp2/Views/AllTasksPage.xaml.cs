@@ -32,13 +32,16 @@ public partial class AllTasksPage : ContentPage
     {
         await Navigation.PushAsync(new());
     }
-    private async void CheckBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    private void CheckBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
     {
         if (sender is CheckBox cb && cb.BindingContext is ToDoApp2.Models.Task task)
         {
-            task.IsCompleted = e.Value; // true = 1, false = 0 in DB
-            await _viewModel.UpdateTaskCompletionAsync(task);
+            task.IsCompleted = e.Value;
+
+            // Fire and forget — UI updates instantly
+            _ = _viewModel.UpdateTaskCompletionAsync(task);
         }
     }
+
 
 }
