@@ -5,11 +5,13 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using SQLite;
+using System.IO;
 
 namespace ToDoApp2.Data
 {
     public class DatabaseContext
     {
+        public static DatabaseContext Instance { get; } = new();
         private const string DbName = "ToDoApplication";
         public static string DbPath => Path.Combine(".", DbName);
         private SQLiteAsyncConnection _connection;

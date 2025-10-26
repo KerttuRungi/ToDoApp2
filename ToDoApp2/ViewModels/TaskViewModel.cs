@@ -1,16 +1,14 @@
-﻿
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Linq;
 using ToDoApp2.Data;
 using TaskModel = ToDoApp2.Models.Task;
-
 
 namespace ToDoApp2.ViewModels
 {
     public partial class TaskViewModel : ObservableObject
     {
-
         private readonly DatabaseContext _context;
 
         public TaskViewModel(DatabaseContext context)
@@ -22,9 +20,13 @@ namespace ToDoApp2.ViewModels
         private ObservableCollection<TaskModel> _tasks = new();
 
         [ObservableProperty]
+        private ObservableCollection<TaskModel> _completedTasks = new();
+
+        [ObservableProperty]
         private TaskModel _operatingTask = new();
 
-        public string TaskButtonText => OperatingTask != null && OperatingTask.Id > 0 ? "Update Task" : "Create Task";
+        public string TaskButtonText =>
+            OperatingTask != null && OperatingTask.Id > 0 ? "Update Task" : "Create Task";
 
         partial void OnOperatingTaskChanged(TaskModel value)
         {
@@ -40,6 +42,7 @@ namespace ToDoApp2.ViewModels
             {
                 var tasks = await _context.GetAllAsync<TaskModel>();
                 Tasks = new ObservableCollection<TaskModel>(tasks ?? new List<TaskModel>());
+                RefreshCompletedTasks();
             });
         }
 
@@ -62,6 +65,13 @@ namespace ToDoApp2.ViewModels
             }
         }
 
+        private void RefreshCompletedTasks()
+        {
+            CompletedTasks.Clear();
+            foreach (var t in Tasks.Where(t => t.IsCompleted))
+                CompletedTasks.Add(t);
+        }
+
         [RelayCommand]
         private void SetOperatingTask(TaskModel? task)
         {
@@ -72,8 +82,7 @@ namespace ToDoApp2.ViewModels
         [RelayCommand]
         private async Task SaveTaskAsync()
         {
-            if (OperatingTask is null)
-                return;
+            if (OperatingTask is null) return;
 
             var (isValid, errorMessage) = OperatingTask.Validate();
             if (!isValid)
@@ -104,6 +113,7 @@ namespace ToDoApp2.ViewModels
                     }
                 }
 
+                RefreshCompletedTasks();
                 SetOperatingTask(null);
             });
         }
@@ -123,6 +133,8 @@ namespace ToDoApp2.ViewModels
                 {
                     await Application.Current.MainPage.DisplayAlert("Error", "Task was not deleted", "OK");
                 }
+
+                RefreshCompletedTasks();
             });
         }
 
@@ -133,7 +145,9 @@ namespace ToDoApp2.ViewModels
             if (index >= 0)
                 Tasks[index].IsCompleted = task.IsCompleted;
 
-            // Save in background (non-blocking)
+            RefreshCompletedTasks();
+
+            // Save in background
             _ = Task.Run(async () =>
             {
                 try
@@ -142,7 +156,6 @@ namespace ToDoApp2.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    // Only show alert on main thread
                     MainThread.BeginInvokeOnMainThread(async () =>
                     {
                         await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");

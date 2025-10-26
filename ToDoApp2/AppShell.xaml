@@ -4,12 +4,28 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:ToDoApp2"
-    Shell.FlyoutBehavior="Flyout"
+    xmlns:views="clr-namespace:ToDoApp2.Views"
+    Shell.FlyoutBehavior="Disabled"
     Title="ToDoApp2">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+        <!-- Avaleht (MainPage on juurkaustas → local:) -->
+        <ShellContent
+            Title="Home"
+            ContentTemplate="{DataTemplate local:MainPage}"
+            Route="MainPage" />
+
+        <!-- Kõik ülesanded (fail Views kaustas) -->
+        <ShellContent
+            Title="All Tasks"
+            ContentTemplate="{DataTemplate views:AllTasksPage}"
+            Route="AllTasksPage" />
+
+        <!-- Tehtud ülesanded (Views kaustas) -->
+        <ShellContent
+            Title="Completed Tasks"
+            ContentTemplate="{DataTemplate views:CompletedTasksPage}"
+            Route="CompletedTasksPage" />
+    </TabBar>
 
 </Shell>
