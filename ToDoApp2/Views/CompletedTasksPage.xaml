@@ -11,7 +11,8 @@
             <Label Text="✓ Completed Tasks"
              FontSize="24"
              HorizontalOptions="Center"
-             Margin="0,10"/>
+             Margin="0,10"
+             TextColor="Black"/>
 
             <CollectionView ItemsSource="{Binding CompletedTasks}">
                 <CollectionView.ItemsLayout>
