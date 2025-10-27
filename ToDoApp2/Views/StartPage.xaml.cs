@@ -7,8 +7,7 @@ public partial class StartPage : ContentPage
         InitializeComponent();
     }
 
-    private async void OnGetStartedClicked(object sender, EventArgs e)
-    {
-        await Navigation.PushAsync(new TasksPage());
-    }
+    
+    async void OnGetStartedClicked(System.Object sender, System.EventArgs e)
+       => Application.Current.MainPage = new NavigationPage(new AllTasksPage());
 }

@@ -29,7 +29,11 @@ namespace ToDoApp2
 #endif
             });
 
+<<<<<<< HEAD
             MainPage = new AppShell();
+=======
+            MainPage = new StartPage();
+>>>>>>> main
 
         }
     }
