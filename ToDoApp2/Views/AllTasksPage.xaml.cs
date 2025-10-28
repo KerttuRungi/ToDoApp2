@@ -6,10 +6,11 @@ namespace ToDoApp2.Views;
 public partial class AllTasksPage : ContentPage
 {
     private readonly TaskViewModel _viewModel;
+
     public AllTasksPage()
-	{
-		InitializeComponent();
-        var dbContext = new DatabaseContext();
+    {
+        InitializeComponent();
+        var dbContext = DatabaseContext.Instance; // kasuta singletoni järjekindlalt
 
         // Initialize and set the ViewModel
         _viewModel = new TaskViewModel(dbContext);
@@ -17,6 +18,7 @@ public partial class AllTasksPage : ContentPage
         // Bind the ViewModel to this page
         BindingContext = _viewModel;
     }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -24,23 +26,26 @@ public partial class AllTasksPage : ContentPage
         // Load tasks when page becomes visible
         await _viewModel.LoadTasksAsync();
     }
-    async void CompletedTasksClicked(System.Object sender, System.EventArgs e)
-    => Application.Current.MainPage = new NavigationPage(new CompletedTasksPage());
 
+    // ? Completed Tasks nupp
+    private async void CompletedTasksClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new CompletedTasksPage());
+    }
+
+    // ? Uncompleted Tasks nupp
     private async void UncompletedTasksClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new());
+        await Navigation.PushAsync(new UncompletedTasksPage());
     }
+
+    // Checkbox muutmine (IsCompleted staatus)
     private void CheckBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
     {
         if (sender is CheckBox cb && cb.BindingContext is ToDoApp2.Models.Task task)
         {
             task.IsCompleted = e.Value;
-
-            // Fire and forget — UI updates instantly
-            _ = _viewModel.UpdateTaskCompletionAsync(task);
+            _ = _viewModel.UpdateTaskCompletionAsync(task); // Fire and forget – UI update kohe
         }
     }
-
-
 }
