@@ -29,14 +29,11 @@ public partial class CompletedTasksPage : ContentPage
 
     // ← Back nupp
 
-
     async void BackButtonClicked(System.Object sender, System.EventArgs e)
    => Application.Current.MainPage = new NavigationPage(new AllTasksPage());
 
-    // Uncompleted nupp
-    private async void UncompletedButtonClicked(object sender, EventArgs e)
-    {
-       // await Shell.Current.GoToAsync(); // viib avalehele
-    }
+    // X Tasks
+    async void UncompletedButtonClicked(System.Object sender, System.EventArgs e)
+   => Application.Current.MainPage = new NavigationPage(new UncompletedTasksPage());
 
 }
