@@ -1,12 +1,92 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:ToDoApp2.Models"
+             x:Class="ToDoApp2.Views.UncompletedTasksPage"
+             Title="Uncompleted Tasks"
+             BackgroundColor="#FFECC0">
 
-namespace ToDoApp2.Views
-{
-class UncompletedTasksPage
-{
-}
-}
+    <ScrollView>
+        <VerticalStackLayout Padding="20">
+
+            <!-- Ülemised nupud -->
+            <HorizontalStackLayout HorizontalOptions="Center"
+                                   Spacing="20"
+                                   Margin="0,10,0,5">
+                <Button Text="← Back"
+                        BackgroundColor="#FFB997"
+                        TextColor="Black"
+                        CornerRadius="25"
+                        FontSize="16"
+                        WidthRequest="160"
+                        Padding="15,8"
+                        Clicked="BackButtonClicked"/>
+                <Button Text="✓ Tasks"
+                        BackgroundColor="#A1E17F"
+                        TextColor="Black"
+                        CornerRadius="25"
+                        FontSize="16"
+                        WidthRequest="160"
+                        Padding="15,8"
+                        Clicked="CompletedButtonClicked"/>
+            </HorizontalStackLayout>
+
+            <Label Text="X Uncompleted Tasks"
+                   FontSize="24"
+                   HorizontalOptions="Center"
+                   Margin="0,10"
+                   TextColor="Black"/>
+
+            <CollectionView ItemsSource="{Binding UncompletedTasks}">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Task">
+                        <Frame BorderColor="#D1B070"
+                               CornerRadius="10"
+                               Padding="10"
+                               Margin="0,5"
+                               BackgroundColor="#FFECC0">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                <CheckBox IsChecked="{Binding IsCompleted}"
+                                          VerticalOptions="Center"
+                                          Color="#4CAF50" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="{Binding Title}"
+                                           FontAttributes="Bold"
+                                           FontSize="18"
+                                           TextColor="Black" />
+                                    <Label Text="{Binding DueDate, StringFormat='Due: {0:dd/MM/yyyy}'}"
+                                           FontAttributes="Italic"
+                                           FontSize="14"
+                                           TextColor="Black" />
+                                </VerticalStackLayout>
+
+                                <!-- Luba kiireks muutmiseks: kui kasutaja checkib valmis, VM uuendab -->
+                                <Button Grid.Column="2"
+                                        Text="Mark ✓"
+                                        Padding="14,6"
+                                        BackgroundColor="#a1e17f"
+                                        TextColor="Black"
+                                        CornerRadius="25"
+                                        Clicked="MarkCompletedClicked"/>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Padding="20"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center">
+                        <Label Text="Kõik tehtud! (vähemalt praegu)"
+                               FontSize="16"
+                               HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
