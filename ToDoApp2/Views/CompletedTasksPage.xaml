@@ -14,7 +14,7 @@
                                    Spacing="20"
                                    Margin="0,10,0,5">
                 <Button Text="← Back"
-                        BackgroundColor="#FFB997"
+                        BackgroundColor="#A1E17F"
                         TextColor="Black"
                         CornerRadius="25"
                         FontSize="16"
@@ -22,7 +22,7 @@
                         Padding="15,8"
                         Clicked="BackButtonClicked"/>
                 <Button Text="X Tasks"
-                        BackgroundColor="#A1E17F"
+                        BackgroundColor="#FFB997"
                         TextColor="Black"
                         CornerRadius="25"
                         FontSize="16"

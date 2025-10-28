@@ -32,7 +32,7 @@
                                Margin="0,10,0,5">
 
             <Button Text="✓ Tasks"
-                    BackgroundColor="#FFB997"
+                    BackgroundColor="#A1E17F"
                     TextColor="Black"
                     CornerRadius="25"
                     FontSize="16"
@@ -41,7 +41,7 @@
                     Clicked="CompletedTasksClicked"/>
 
             <Button Text="X Tasks"
-                    BackgroundColor="#A1E17F"
+                    BackgroundColor="#FFB997"
                     TextColor="Black"
                     CornerRadius="25"
                     FontSize="16"
