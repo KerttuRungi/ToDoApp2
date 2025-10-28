@@ -16,12 +16,19 @@ namespace ToDoApp2.ViewModels
             _context = context;
         }
 
+        // Kõik tööd (toorloetelu)
         [ObservableProperty]
         private ObservableCollection<TaskModel> _tasks = new();
 
+        // ✓ tööd
         [ObservableProperty]
         private ObservableCollection<TaskModel> _completedTasks = new();
 
+        // ✗ tööd — UUS
+        [ObservableProperty]
+        private ObservableCollection<TaskModel> _uncompletedTasks = new();
+
+        // Vormil töötatav töö
         [ObservableProperty]
         private TaskModel _operatingTask = new();
 
@@ -42,7 +49,9 @@ namespace ToDoApp2.ViewModels
             {
                 var tasks = await _context.GetAllAsync<TaskModel>();
                 Tasks = new ObservableCollection<TaskModel>(tasks ?? new List<TaskModel>());
-                RefreshCompletedTasks();
+
+                // Täida mõlemad alamvaated
+                RefreshCompletedAndUncompleted();
             });
         }
 
@@ -65,11 +74,17 @@ namespace ToDoApp2.ViewModels
             }
         }
 
-        private void RefreshCompletedTasks()
+        // Uuenda ✓ ja ✗ loetelusid korraga
+        private void RefreshCompletedAndUncompleted()
         {
             CompletedTasks.Clear();
-            foreach (var t in Tasks.Where(t => t.IsCompleted))
-                CompletedTasks.Add(t);
+            UncompletedTasks.Clear();
+
+            foreach (var t in Tasks)
+            {
+                if (t.IsCompleted) CompletedTasks.Add(t);
+                else UncompletedTasks.Add(t);
+            }
         }
 
         [RelayCommand]
@@ -113,7 +128,7 @@ namespace ToDoApp2.ViewModels
                     }
                 }
 
-                RefreshCompletedTasks();
+                RefreshCompletedAndUncompleted();
                 SetOperatingTask(null);
             });
         }
@@ -134,20 +149,20 @@ namespace ToDoApp2.ViewModels
                     await Application.Current.MainPage.DisplayAlert("Error", "Task was not deleted", "OK");
                 }
 
-                RefreshCompletedTasks();
+                RefreshCompletedAndUncompleted();
             });
         }
 
         public async Task UpdateTaskCompletionAsync(TaskModel task)
         {
-            // Update UI immediately
+            // UI kohe
             var index = Tasks.ToList().FindIndex(t => t.Id == task.Id);
             if (index >= 0)
                 Tasks[index].IsCompleted = task.IsCompleted;
 
-            RefreshCompletedTasks();
+            RefreshCompletedAndUncompleted();
 
-            // Save in background
+            // Salvesta
             _ = Task.Run(async () =>
             {
                 try
